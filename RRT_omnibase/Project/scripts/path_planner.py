@@ -11,14 +11,14 @@ global obs_in_path
 obs_in_path = []
 global rate
 
-def get_obs(request):                       # callback function
+def get_obs(request): 
     global obs_in_path
     obs_in_path = request
 
 rospy.init_node('path_planner', anonymous = True)
 sub = rospy.Subscriber('/obstacles', mylist, get_obs)
 pub = rospy.Publisher('/path', points, queue_size = 10)
-rate = rospy.Rate(50)                       # 50 Hz
+rate = rospy.Rate(50)
 
 class RRT:
     """

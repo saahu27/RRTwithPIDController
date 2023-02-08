@@ -18,7 +18,7 @@ class Publish():
         self.goal = Point()
         self.n_point = 0
         self.obs = []
-        self.rate = rospy.Rate(50) # 50 Hz
+        self.rate = rospy.Rate(50)
         self.pub = rospy.Publisher('/obstacles', mylist, queue_size = 10)
         self.flag = True
         self.j = 0

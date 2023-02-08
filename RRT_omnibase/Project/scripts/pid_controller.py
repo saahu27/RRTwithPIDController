@@ -30,15 +30,15 @@ class Trotbot:
         self.sub = rospy.Subscriber('/path', points, self.get_path)
         self.odom_sub = rospy.Subscriber('/odom', Odometry, self.get_odom)
         self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size = 10)
-        self.rate = rospy.Rate(50)              # 50 Hz
+        self.rate = rospy.Rate(50)     
     
-        self.Kp = 1.0                           # Default Proportionality Constant                            
-        self.Ki = 0.0                           # Default Integral Constant
-        self.Kd = 0.0                           # Default Derivative Constant
-        self.feedback_value = 0.0               # This will help us in controlling the actuator response  
-        self.SetPoint = 100                     # We will compare our feedback_value to the SetPoint value
-        self.current_time = current_time if current_time is not None else time.time()  # We will use time difference of short intervals to calculate Integral and Derivative Terms
-        self.last_time = self.current_time      # After each iteration we will update the last_time and current time
+        self.Kp = 1.0                                                       
+        self.Ki = 0.0                           
+        self.Kd = 0.0                           
+        self.feedback_value = 0.0                
+        self.SetPoint = 100                     
+        self.current_time = current_time if current_time is not None else time.time()
+        self.last_time = self.current_time      
 
         self.PTerm = 0.0                        # Default Proportionality Term
         self.ITerm = 0.0                        # Default Integral Term
@@ -49,10 +49,10 @@ class Trotbot:
         self.windup_guard = 1000000000.0             
 
     def set_pid(self):
-        self.PTerm = 0.0                        # Default Proportionality Term
-        self.ITerm = 0.0                        # Default Integral Term
-        self.DTerm = 0.0                        # Default Derivative Term
-        self.last_error = 0.0                   # After each iteration we will update the last_error.       
+        self.PTerm = 0.0                        
+        self.ITerm = 0.0                        
+        self.DTerm = 0.0                        
+        self.last_error = 0.0                        
         self.error = 0.0
         
     def get_path(self, request):
@@ -106,7 +106,7 @@ class Trotbot:
         self.PTerm = self.SetPoint - feedback_value
         return Kp*self.PTerm
        
-    def move2goal(self, current_time=None):     # Function that commands the turtlebot
+    def move2goal(self, current_time=None):
         
         vel_msg = Twist()
         i = 0
@@ -133,7 +133,7 @@ class Trotbot:
                 self.new_x = self.goal.x - self.x
                 self.new_y = self.goal.y - self.y
                      
-                if((self.flag == False) and (round(abs(self.SetPoint-(self.theta)), 3) >= 0.005)): # Precision upto 3 decimal places
+                if((self.flag == False) and (round(abs(self.SetPoint-(self.theta)), 3) >= 0.005)):
                     print("Rotating")
                     if (i == 0):
                         self.SetPoint = atan2(self.goal.y, self.goal.x)
@@ -147,8 +147,8 @@ class Trotbot:
                     rospy.loginfo(self.feedback_value)
                     
                     self.Kp = 1
-                    self.Kd = 0 #0.00001  Recommended value in case PID contoller is used
-                    self.Ki = 0 #0.00001  Recommended value in case PID contoller is used
+                    self.Kd = 0 #0.00001
+                    self.Ki = 0 #0.00001
                     vel_msg.linear.x = 0
                     #vel_msg.angular.z = self.calculate(self.new_y, self.new_x, self.Kp, self.Ki, self.Kd, self.feedback_value)   PID Controller
                     vel_msg.angular.z = self.cal_easy(self.new_y, self.new_x, self.Kp, self.Ki, self.Kd, self.feedback_value)     # Simple P Controller
@@ -176,14 +176,12 @@ class Trotbot:
                     print("........")
                     
                     self.Kp = 1
-                    self.Kd = 0 #0.000001 Recommended value in case PID contoller is used
-                    self.Ki = 0 #0.000001 Recommended value in case PID contoller is used
+                    self.Kd = 0 #0.000001
+                    self.Ki = 0 #0.000001 
                     vel_msg.angular.z = 0.0
                     #vel_msg.linear.x = self.cal_easy(self.new_y, self.new_x, self.Kp, self.Ki, self.Kd, self.feedback_value)       PID Controller
                     vel_msg.linear.x = self.cal_easy(self.new_y, self.new_x, self.Kp, self.Ki, self.Kd, self.feedback_value)        # Simple P Controller
-                    print("===========")
-                    print(vel_msg.linear.x) 
-                    print("===========")           
+                    print(vel_msg.linear.x)          
                 else:
                     if(self.flag == True):
                         vel_msg.linear.x = 0.0
